@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace PatientCaseApplication.Helpers
 {
-    public static class OcupationProvider
+    public static class OccupationProvider
     {
         public static Occupation CreateOccupation(OccupationType type, string description)
         {

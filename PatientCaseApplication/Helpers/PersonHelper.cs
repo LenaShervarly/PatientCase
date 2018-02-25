@@ -24,6 +24,9 @@ namespace PatientCaseApplication.Helpers
         public static Medic CreateNewMedic(ulong personalNumber, Occupation occupation)
         {
             Medic medic = DbHelper.GetIfExist<Medic>(nameof(Medic.PersonalNo), personalNumber);
+            if (medic != null)
+                return medic;
+
             Db.Transact(() =>
             {
                 medic = new Medic
@@ -114,8 +117,18 @@ namespace PatientCaseApplication.Helpers
 
         public static void DeletePerson(Person person)
         {
+            IEnumerable<PatientVisit> patientvisits = null;
+
             Db.Transact(() =>
             {
+                if (person is Patient) {
+                    patientvisits = PatientTreatmentHelper.SelectAllVisitsOf(person as Patient);
+                    patientvisits.ForEach(v => v.Patient = null);
+                }
+
+                if (person is Medic)
+                    (person as Medic).PlaceOfWork = null;
+
                 person.Delete();
             });
         }

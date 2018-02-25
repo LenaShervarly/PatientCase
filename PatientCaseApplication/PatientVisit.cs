@@ -16,7 +16,8 @@ namespace PatientCaseApplication
         public Patient Patient { get; set; }
 
         public IEnumerable<VisitIssue> Issues => Helpers.DbHelper.SelectFrom<VisitIssue>(nameof(VisitIssue.Visit), this);
-        
-        public decimal TotalVisitCost => Issues.Sum(i => i.Issue.Price);
+      
+        //[Transient]
+        //public decimal TotalVisitCost => Issues.Sum(i => i.Issue.Price);
     }
 }

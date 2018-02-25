@@ -10,5 +10,7 @@ namespace PatientCaseApplication
         public Clinic Clinic { get; set; }
 
         public IEnumerable<PatientVisit> Visits => Helpers.DbHelper.SelectFrom<PatientVisit>(nameof(PatientVisit.Registry), this);
+
+        public bool Deleted { get; set; }
     }
 }

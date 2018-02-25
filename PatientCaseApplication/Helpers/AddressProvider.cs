@@ -39,7 +39,7 @@ namespace PatientCaseApplication.Helpers
         {
             Db.Transact(() =>
             {
-                address.Delete();
+                address.Deleted = true;
             });
         }
 

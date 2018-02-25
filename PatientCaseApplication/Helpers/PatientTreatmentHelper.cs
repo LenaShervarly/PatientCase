@@ -36,6 +36,7 @@ namespace PatientCaseApplication.Helpers
                 {
                     Created = DateTime.Now,
                     Patient = patient,
+                    Registry = registry
                 };
             });
 
@@ -61,8 +62,8 @@ namespace PatientCaseApplication.Helpers
         {
             Db.Transact(() =>
             {
-                var visitissues = Db.SQL<VisitIssue>($"SELECT vi FROM {typeof(VisitIssue).Name} " +
-                    $"WHERE {nameof(VisitIssue.Issue)} = ? AND {nameof(VisitIssue.Visit)} = ?", issue, visit);
+                var visitissues = Db.SQL<VisitIssue>($"SELECT v FROM {typeof(VisitIssue).Name} v " +
+                    $"WHERE v.{nameof(VisitIssue.Issue)} = ? AND v.{nameof(VisitIssue.Visit)} = ?", issue, visit);
 
                 foreach(VisitIssue item in visitissues)
                 {
@@ -78,10 +79,9 @@ namespace PatientCaseApplication.Helpers
 
             Db.Transact(() =>
             {
-                var currentClinic = registry.Clinic;
-                currentClinic.PatientRegister.ToList().Remove(registry);
-
-                registry.Visits.ForEach(v => DeleteVisit(v));
+                registry.Clinic = null;
+                registry.Visits?.ForEach(v => DeleteVisit(v));
+                registry.Deleted = true;
             });
         }
 
@@ -89,11 +89,10 @@ namespace PatientCaseApplication.Helpers
         {
             Db.Transact(() =>
             {
-                var registry = visit.Registry;
-                registry.Visits.ToList().Remove(visit);
-
-                var patient = visit.Patient;
-                patient.VisitsToClinic.ToList().Remove(visit);
+                visit.Registry = null; 
+                visit.Patient = null;
+                visit.Issues?.ForEach(i => i.Delete());
+                visit.Delete();
             });
         }
 

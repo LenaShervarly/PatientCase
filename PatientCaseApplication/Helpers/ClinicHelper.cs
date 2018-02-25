@@ -67,31 +67,29 @@ namespace PatientCaseApplication.Helpers
 
         public static void DeleteClinicChain(ClinicsChain chain)
         {
-            chain.Clinics?.ForEach(c => c.Chain = null);
-            chain.Delete();
+            Db.Transact(() =>
+            {
+                chain.Clinics?.ForEach(c => c.Chain = null);
+                chain.Delete();
+            });
         }
 
         public static void DeleteClinic(Clinic clinic)
         {
-            clinic.Personal?.ForEach(p => p.PlaceOfWork = null);
-
-            clinic.PatientRegister?.ForEach(pr => PatientTreatmentHelper.DeletePatientRegistry(pr));
-
-            DeleteAddress(clinic.Address);
-
-            var chain = SelectClinicChainsByUnitingCharacteristic(clinic.Chain?.UnitingCharacteristic).FirstOrDefault();
-
-            if (chain?.Clinics?.Count() <= 1)
-                DeleteClinicChain(chain);
-
-            clinic.Delete();
-        }
-
-        public static void DeleteAddress(Address address)
-        {
             Db.Transact(() =>
             {
-                address.Deleted = true;
+                clinic.Personal?.ForEach(p => p.PlaceOfWork = null);
+
+                clinic.PatientRegister?.ForEach(pr => PatientTreatmentHelper.DeletePatientRegistry(pr));
+
+                AddressProvider.Delete(clinic.Address);
+
+                var chain = SelectClinicChainsByUnitingCharacteristic(clinic.Chain?.UnitingCharacteristic).FirstOrDefault();
+
+                if (chain?.Clinics?.Count() <= 1)
+                    DeleteClinicChain(chain);
+
+                clinic.Delete();
             });
         }
 

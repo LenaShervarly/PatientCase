@@ -1,5 +1,4 @@
 ﻿using PatientCaseApplication.Helpers;
-using Starcounter;
 using System;
 
 namespace PatientCaseApplication
@@ -21,10 +20,10 @@ namespace PatientCaseApplication
             ClinicHelper.AddClinicToClinicChain(karolinskaClinic, stockholmiansClinicChain);
             ClinicHelper.AddClinicToClinicChain(karolinskaClinic, stockholmiansClinicChain);
 
-            var neurologistOccupation = OcupationProvider.CreateOccupation(OccupationType.Doctor, "Neurologist");
-            var pediatrOccupation = OcupationProvider.CreateOccupation(OccupationType.Doctor, "Pediatr");
-            var pediatricNurseOccupation = OcupationProvider.CreateOccupation(OccupationType.Nurse, "Pediatric nurse");
-            var adminOccupation = OcupationProvider.CreateOccupation(OccupationType.Admin, "Administrator");
+            var neurologistOccupation = OccupationProvider.CreateOccupation(OccupationType.Doctor, "Neurologist");
+            var pediatrOccupation = OccupationProvider.CreateOccupation(OccupationType.Doctor, "Pediatr");
+            var pediatricNurseOccupation = OccupationProvider.CreateOccupation(OccupationType.Nurse, "Pediatric nurse");
+            var adminOccupation = OccupationProvider.CreateOccupation(OccupationType.Admin, "Administrator");
 
             var neurologist = PersonHelper.CreateNewMedic(196002011364, neurologistOccupation);
             var pediatr = PersonHelper.CreateNewMedic(197001011089, pediatrOccupation);
@@ -51,6 +50,18 @@ namespace PatientCaseApplication
             PatientTreatmentHelper.AddIssue(patientVisitCapio, ultrasound);
             PatientTreatmentHelper.AddIssue(patientVisitKarolinska, ekg);
             PatientTreatmentHelper.AddIssue(patientVisitKarolinska, mriScan);
+
+            ClinicHelper.DeleteClinic(karolinskaClinic);
+            ClinicHelper.DeleteClinicChain(doctriniansClinicChain);
+
+            PatientTreatmentHelper.DeleteIssueFromPatientVisit(ultrasound, patientVisitCapio);
+            PatientTreatmentHelper.DeletePatientRegistry(patientRegisterKarolinska);
+
+            OccupationProvider.Delete(adminOccupation);
+            AddressProvider.Delete(karolinskaAddress);
+
+            IssueProvider.Delete(ekg);
+            PersonHelper.DeletePerson(neurologist);
         }
     }
 }
